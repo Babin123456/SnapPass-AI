@@ -45,16 +45,76 @@ As the Project Admin, my goal is to ensure you have the best possible open-sourc
 
 ## 🏅 GSSoC Point System & Labels
 
-To make it easy for you to pick up tasks and earn points, we use standard GSSoC labels on our GitHub Issues:
+To ensure points are awarded correctly, we follow a strict labeling system for all PRs. 
 
-| Label Name | Difficulty | Description | Points |
-| :--- | :---: | :--- | :---: |
-| `level1` / `good first issue` | **Easy** | Typo fixes, simple CSS tweaks, markdown updates. | **10** |
-| `level2` | **Medium** | New React components, simple backend routes, minor bug fixes. | **25** |
-| `level3` | **Hard** | Complex logic, AI integrations, database schema design. | **45** |
-| `level4` | **Expert** | Core architectural changes, complex CI/CD, advanced OpenCV. | **100+** |
+### 1. Difficulty Labels (Choose ONLY ONE)
+Every PR must have one difficulty label.
+*   `level:beginner` → very easy fixes, typo fixes, simple UI changes
+*   `level:intermediate` → moderate feature/fix, API integration, medium logic
+*   `level:advanced` → complex features, architecture changes, optimization
+*   `level:critical` → major system/security/core changes
 
-> **Pro Tip:** Always comment `"Please assign this to me"` on an issue and **wait for the Project Admin or Mentor to assign it to you** before you start working! This avoids overlapping work and ensures you get the points.
+**Example:**
+*   Small README update → `level:beginner`
+*   Authentication system → `level:advanced`
+
+### 2. Quality Labels (Optional)
+Add if the PR quality is good. Do NOT add both together normally. Choose one if deserved.
+*   `quality:clean` → well-structured code
+*   `quality:exceptional` → outstanding work
+
+### 3. Type Labels (Optional but Recommended)
+These give bonus points. Use according to the work done:
+*   `type:docs`
+*   `type:testing`
+*   `type:accessibility`
+*   `type:design`
+*   `type:performance`
+*   `type:refactor`
+*   `type:devops`
+*   `type:security`
+*   `type:bug`
+*   `type:feature`
+
+**Examples:**
+*   New dashboard → `type:feature`
+*   README improvement → `type:docs`
+*   Speed optimization → `type:performance`
+
+*You can add multiple type labels if valid.*
+
+### 4. Validation Labels (VERY IMPORTANT)
+These decide whether points count.
+
+**Valid PR**
+Add:
+*   `gssoc:approved`
+
+**Invalid PR**
+Use only if necessary. If you add any invalid/spam label, the contributor gets 0 points:
+*   `gssoc:invalid`
+*   `gssoc:spam`
+*   `gssoc:ai slop`
+
+### 5. Mentor Label
+If mentors review PRs, this gives mentor review points:
+*   `mentor:username` (Example: `mentor:rahul`, `mentor:aniket`)
+
+### Recommended Label Combination Examples
+
+*   **Example 1 — Good Feature PR:** `level:intermediate`, `type:feature`, `quality:clean`, `gssoc:approved`
+*   **Example 2 — Documentation PR:** `level:beginner`, `type:docs`, `gssoc:approved`
+*   **Example 3 — Excellent Security Fix:** `level:advanced`, `type:security`, `quality:exceptional`, `gssoc:approved`
+
+### 🚨 Most Important Rule
+For contributor points, a PR must:
+✅ Be merged
+✅ Have at least one review
+✅ Have `gssoc:approved`
+
+**Without `gssoc:approved`, no score is counted.**
+
+> **Pro Tip:** Always comment `"Please assign this to me"` on an issue and **wait for the Project Admin or Mentor to assign it to you** before you start working! This avoids overlapping work.
 
 ---
 
