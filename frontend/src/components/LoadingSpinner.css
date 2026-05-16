@@ -1,4 +1,10 @@
-/* ── LoadingSpinner ─────────────────────────────── */
+/* ── LoadingSpinner ─────────────────────────────────────────────────────────
+   Shared spinner used across UploadPage, EditorPage, PrintPreviewPage,
+   and any future async section. Also consumed by ButtonSpinner (inline variant).
+   All @keyframes spin references in other components point here.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── Wrapper ──────────────────────────────────────── */
 .spinner-wrap {
   display: flex;
   flex-direction: column;
@@ -7,38 +13,64 @@
   padding: var(--space-xl);
 }
 
+/* Full-page overlay variant */
 .spinner-wrap--fullpage {
   position: fixed;
   inset: 0;
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(248, 250, 252, 0.88); /* --color-bg at 88% */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   z-index: 999;
   justify-content: center;
 }
 
+/* ── Ring ─────────────────────────────────────────── */
 .spinner {
   border-radius: 50%;
   border-style: solid;
   border-color: var(--color-border);
   border-top-color: var(--color-primary);
-  animation: spin 0.75s linear infinite;
+  animation: spinner-spin 0.75s linear infinite;
+  flex-shrink: 0;
 }
 
-.spinner--sm { width: 22px; height: 22px; border-width: 2px; }
+/* Light variant — white ring for use on primary/dark backgrounds */
+.spinner--light {
+  border-color: rgba(255, 255, 255, 0.35);
+  border-top-color: #ffffff;
+}
+
+/* ── Size tokens ─────────────────────────────────── */
+.spinner--sm { width: 18px; height: 18px; border-width: 2px; }
 .spinner--md { width: 36px; height: 36px; border-width: 3px; }
 .spinner--lg { width: 52px; height: 52px; border-width: 4px; }
 
+/* ── Button inline variant ───────────────────────── */
+/* Removes the margin/padding that spinner-wrap adds; sits flush in flex rows */
+.spinner--btn {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+/* ── Message ─────────────────────────────────────── */
 .spinner-message {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+  text-align: center;
+  margin: 0;
 }
 
+/* ── Accessibility ───────────────────────────────── */
 .sr-only {
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
   white-space: nowrap;
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+/* ── Keyframe ────────────────────────────────────── */
+@keyframes spinner-spin {
+  to { transform: rotate(360deg); }
+}
