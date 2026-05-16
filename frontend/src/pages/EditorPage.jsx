@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import PhotoPreview from '../components/PhotoPreview';
 import BackgroundSelector from '../components/BackgroundSelector';
 import SizeSelector from '../components/SizeSelector';
+import { ButtonSpinner } from '../components/LoadingSpinner';
 import './EditorPage.css';
 import EmptyState from '../components/EmptyState';
 
@@ -98,7 +99,7 @@ function EditorPage() {
             onClick={handleProcess}
             disabled={isProcessing}
           >
-            {isProcessing ? '⏳ Processing…' : '✨ Process with AI →'}
+            {isProcessing ? <><ButtonSpinner /> Processing…</> : '✨ Process with AI →'}
           </button>
         </aside>
       </div>

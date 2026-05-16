@@ -1,4 +1,5 @@
 import React from 'react';
+import LoadingSpinner from './LoadingSpinner';
 import './PhotoPreview.css';
 
 /**
@@ -42,7 +43,7 @@ function PhotoPreview({ originalUrl, processedUrl, isProcessing }) {
           ) : (
             <div className="photo-preview__empty">
               {isProcessing ? (
-                <div className="photo-preview__spinner" aria-label="Processing" />
+                <LoadingSpinner size="md" />
               ) : (
                 <p className="photo-preview__empty-text">
                   Upload and process a photo to preview the AI-generated result

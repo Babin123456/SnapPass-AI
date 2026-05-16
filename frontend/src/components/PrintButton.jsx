@@ -1,4 +1,5 @@
 import React from 'react';
+import { ButtonSpinner } from './LoadingSpinner';
 import './PrintButton.css';
 
 /**
@@ -21,7 +22,7 @@ function PrintButton({ onClick, isLoading = false, disabled = false, label = 'Ge
     >
       {isLoading ? (
         <>
-          <span className="print-btn__spinner" aria-hidden="true" />
+          <ButtonSpinner />
           Generating…
         </>
       ) : (
