@@ -1,3 +1,7 @@
+__pycache__/
+*.pyc
+outputs/
+test.jpg
 venv/
 __pycache__/
 *.pyc
@@ -8,4 +12,3 @@ uploads/
 *.jpeg
 *.png
 *.pdf
-.DS_Store
