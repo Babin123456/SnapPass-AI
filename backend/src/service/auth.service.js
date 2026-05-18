@@ -9,7 +9,7 @@ import NotFoundError from "../utils/errors/NotFoundError.js";
 export async function registerUser(userData) {
     const existingUser = await findUserByEmail(userData.email);
     if (existingUser) {
-        throw new AppError("Email already in use", 400);
+        throw new AppError("Email already in use", 409);
     }
     const user = await createUser(userData);
     return user;
