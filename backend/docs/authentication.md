@@ -11,6 +11,9 @@ This document outlines the complete authentication architecture, flow, and endpo
   - [Login User](#2-login-user)
   - [Logout User](#3-logout-user)
   - [Get Current User](#4-get-current-user)
+  - [Request Password Reset](#5-request-password-reset)
+  - [Verify Password Reset OTP](#6-verify-password-reset-otp)
+  - [Reset Password](#7-reset-password)
 - [Security Measures](#security-measures)
 
 ---
@@ -170,6 +173,100 @@ Retrieves the currently authenticated user's profile data using their cookie.
 
 ---
 
+### 5. Request Password Reset
+
+Initiates the password reset process by generating a One-Time Password (OTP) and sending it to the user's registered email. The OTP expires in 5 minutes.
+
+- **Route:** `POST /password-reset-request`
+- **Access:** Public
+- **Headers:** `Content-Type: application/json`
+
+**Expected Input:**
+```json
+{
+  "email": "jane@example.com"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "OTP sent to your email successfully",
+  "data": null
+}
+```
+
+**Common Error Responses:**
+- `400 Bad Request` (Validation Failed: invalid email format)
+- `404 Not Found` (User not found)
+
+---
+
+### 6. Verify Password Reset OTP
+
+Verifies the provided OTP for validity before allowing the user to set a new password. This endpoint does not consume the OTP; it just checks if it is correct and not expired.
+
+- **Route:** `POST /verify-otp`
+- **Access:** Public
+- **Headers:** `Content-Type: application/json`
+
+**Expected Input:**
+```json
+{
+  "email": "jane@example.com",
+  "otp": "123456"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "OTP verified successfully",
+  "data": null
+}
+```
+
+**Common Error Responses:**
+- `400 Bad Request` (Invalid or expired OTP, or validation failed)
+- `404 Not Found` (User not found)
+
+---
+
+### 7. Reset Password
+
+Finalizes the password reset process by re-verifying and consuming the OTP, and updating the user's password.
+
+- **Route:** `POST /password-reset`
+- **Access:** Public
+- **Headers:** `Content-Type: application/json`
+
+**Expected Input:**
+```json
+{
+  "email": "jane@example.com",
+  "otp": "123456",
+  "newPassword": "NewPassword123!"
+}
+```
+*Note: The new password must meet the same strict password requirements as registration.*
+
+**Success Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Password reset successfully",
+  "data": null
+}
+```
+
+**Common Error Responses:**
+- `400 Bad Request` (Validation Failed: missing fields or weak password, or invalid/expired OTP)
+- `404 Not Found` (User not found)
+
+---
+
 ## Security Measures
 
 - **HTTP-Only Cookies:** Tokens are never exposed to front-end JavaScript, preventing XSS-based token theft.
@@ -180,4 +277,4 @@ Retrieves the currently authenticated user's profile data using their cookie.
 ---
 
 **Author:** Subham777-max  
-**Last Updated:** May 18, 2026
+**Last Updated:** May 19, 2026
