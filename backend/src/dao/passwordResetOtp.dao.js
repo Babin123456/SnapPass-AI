@@ -13,13 +13,20 @@ export async function createPasswordResetOtp(userId, otp) {
     return passwordResetOtp;
 }
 
-export async function findValidOtp(userId, otp) {
+export async function findLatestPendingOtp(userId) {
     return await PasswordResetOtp.findOne({
         userId,
-        otp,
         state: "pending",
         expiresAt: { $gt: new Date() }, // OTP must not be expired
-    });
+    }).sort({ createdAt: -1 });
+}
+
+export async function incrementOtpAttempts(id) {
+    return await PasswordResetOtp.findByIdAndUpdate(
+        id, 
+        { $inc: { attempts: 1 } }, 
+        { returnDocument: "after" }
+    );
 }
 
 export async function updateOtpState(id, newState) {
