@@ -55,8 +55,8 @@ function Navbar({darkMode, toggleTheme}) {
           
         {/* CTA */}
         <div className="navbar__actions">
-          <button onClick = {toggleTheme} className ={` flex items-center justify-center w-10 ml-auto p-2 h-10 rounded-full ${darkMode? 'bg-gray-700': 'bg-[#a2bece]' }`}> {darkMode? <Sun className='text-amber-500'/> : <Moon/>}</button>
-          <Link to="/upload" className={`navbar__cta ${darkMode ? "navbar__cta-dark" : "navbar__cta-light"}`}>
+          <button onClick = {toggleTheme} className ={`flex items-center justify-center w-10 ml-auto p-2 hover:no-underline h-10 rounded-full ${darkMode? 'bg-gray-700': 'bg-[#a2bece]' }`}> {darkMode? <Sun className='text-amber-500'/> : <Moon/>}</button>
+          <Link to="/upload" className={`navbar__cta hover:no-underline ${darkMode ? "navbar__cta-dark" : "navbar__cta-light"}`}>
           
             Get Started
           </Link>

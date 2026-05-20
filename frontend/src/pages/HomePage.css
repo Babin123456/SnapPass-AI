@@ -55,19 +55,34 @@
   font-size: clamp(2rem, 4vw, 3rem);
   font-weight: 800;
   line-height: 1.15;
-  color: var(--color-text);
   letter-spacing: -1px;
   font-family: var(--font-family-display);
 }
 
-.hero__title-highlight {
+.hero__title-light {
+  color: var(--color-text);
+}
+.hero__title-dark {
+  color: var(--color-primary-dark);
+}
+
+.hero__title-highlight-light {
   color: var(--color-primary);
+}
+.hero__title-highlight-dark {
+  color: var(--color-text-dark2);
 }
 
 .hero__subtitle {
   font-size: var(--font-size-lg);
-  color: var(--color-text-muted);
   line-height: 1.7;
+}
+.hero__subtitle-light {
+  color: var(--color-text-muted);
+}
+
+.hero__subtitle-dark {
+  color: var(--color-text-light);
 }
 
 .hero__actions {
@@ -81,12 +96,20 @@
   font-size: var(--font-size-md);
   padding: 12px var(--space-xl);
 }
+.btn-primary-dark {
+  background-color: var(--color-text-dark);
+  color: #ffffff;
+}
 
 /* Hero visual */
 .hero__visual {
   flex-shrink: 0;
   position: relative;
   width: 300px;
+}
+.badge-blue-dark{
+  background-color: #c5b804;
+  color: #ffffff;
 }
 
 .hero__photo-mock {
@@ -132,13 +155,20 @@
   position: absolute;
   bottom: -14px;
   right: -14px;
-  background: var(--color-primary);
-  color: #fff;
   font-size: var(--font-size-sm);
   font-weight: 600;
   padding: 8px 16px;
   border-radius: var(--radius-full);
   box-shadow: var(--shadow-md);
+}
+
+.hero__ai-badge-dark {
+  background-color: var(--color-text-dark);
+  color: #ffffff;
+}
+.hero__ai-badge-light {
+  background: var(--color-primary);
+  color: #fff;
 }
 
 @keyframes riseFade {
@@ -195,9 +225,14 @@
   text-align: center;
 }
 
-.home-page .section-title {
+.section-title {
   font-family: var(--font-family-display);
   letter-spacing: -0.5px;
+}
+.section-title-light {
+color: #000000;
+}
+.section-title-dark {
 }
 
 .steps-grid {

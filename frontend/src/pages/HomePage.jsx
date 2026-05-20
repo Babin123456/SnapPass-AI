@@ -115,31 +115,30 @@ function HomePage({darkMode, toggleTheme}) {
       {/* ── Hero ── */}
       <section className="hero" aria-labelledby="hero-title">
         <div className="hero__inner">
-          <span className="badge badge-blue">Open Source · Free to Use</span>
-          <h1 id="hero-title" className="hero__title">
+          <span className={`badge ${darkMode?"badge-blue-dark": "badge-blue"}`}>Open Source · Free to Use</span>
+          <h1 id="hero-title" className={`hero__title ${darkMode? 'hero__title-dark': 'hero__title-light'}`}>
             Passport Photos,<br />
-            <span className="hero__title-highlight">Powered by AI</span>
+            <span className={`hero__title-highlight ${darkMode? 'hero__title-highlight-dark': 'hero__title-highlight-light'}`}>Powered by AI</span>
           </h1>
-          <p className="hero__subtitle">
+          <p className={`hero__subtitle ${darkMode? 'hero__subtitle-dark': 'hero__subtitle-light'}`} >
             Upload once. Get a perfectly centred, background-removed, print-ready
             passport photo sheet in seconds.
           </p>
           <div className="hero__actions">
-            <Link to="/upload" className="btn btn-primary hero__btn-primary">
+            <Link to="/upload" className={`btn hero__btn-primary ${darkMode?  "btn-primary-dark": 'btn-primary' }`}>
               Upload Your Photo
             </Link>
           </div>
         </div>
         <div className="hero__visual" aria-hidden="true">
           <div className={`hero__photo-mock ${darkMode? "hero__photo-mock-dark": "hero__photo-mock-light" }`}>
-  
             <div className={`hero__photo-frame ${darkMode? "hero__photo-frame-dark": "hero__photo-frame-light"}`}/>
             <div className={`hero__photo-frame ${darkMode? "hero__photo-frame-dark": "hero__photo-frame-light"}`}/>
             <div className={`hero__photo-frame ${darkMode? "hero__photo-frame-dark": "hero__photo-frame-light"}`}/>
             <div className={`hero__photo-frame ${darkMode? "hero__photo-frame-dark": "hero__photo-frame-light"}`}/>
           
           </div>
-          <span className="hero__ai-badge"> AI Processed</span>
+          <span className={`hero__ai-badge ${darkMode? "hero__ai-badge-dark": "hero__ai-badge-light"}`}> AI Processed</span>
         </div>
       </section>
 
@@ -152,13 +151,13 @@ function HomePage({darkMode, toggleTheme}) {
         {/* left  text */}
         <div className="ai-showcase__content">
 
-          <span className="badge badge-blue">
+          <span className={`badge ${darkMode?"badge-blue-dark": "badge-blue"}`}>
             AI Powered Workflow
           </span>
 
           <h2
             id="ai-showcase-title"
-            className="section-title"
+            className={`section-title ${darkMode? "section-title-dark": "section-title-light"}`}
           >
             From Simple Upload
             <br />
