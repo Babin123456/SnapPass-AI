@@ -63,6 +63,7 @@ function PrintPreviewPage({darkMode, toggleTheme}) {
 
 
   return (
+    <div className = {`print-preview-toggle ${darkMode? "print-preview-toggle-dark": "" }`}> 
     <div className="print-page page-content">
       <motion.div
         className="print-page__header"
@@ -72,8 +73,8 @@ function PrintPreviewPage({darkMode, toggleTheme}) {
         viewport={{ once: true }}
         custom={0.1}
       >
-        <h1 className="section-title">Print Preview</h1>
-        <p className="section-subtitle">
+        <h1 className={`section-title ${darkMode? "section-title-dark": "section-title-light"}`}>Print Preview</h1>
+        <p className={`section-subtitle ${darkMode? "section-subtitle-dark": "section-subtitle-light"}`}>
           Adjust quantity and generate your printable A4 sheet.
         </p>
       </motion.div>
@@ -126,17 +127,19 @@ function PrintPreviewPage({darkMode, toggleTheme}) {
 
           <hr className="divider" />
 
-          <QuantityInput value={quantity} onChange={setQuantity} />
+          <QuantityInput darkMode = {darkMode} toggleTheme = {toggleTheme} value={quantity} onChange={setQuantity} />
 
           <hr className="divider" />
 
           <PrintButton
             onClick={handleGenerateSheet}
             isLoading={isGenerating}
+            darkMode={darkMode}
+            toggleTheme={toggleTheme}
             disabled={isGenerating}
           />
 
-          <Link to="/editor" className="btn btn-ghost print-page__back-btn">
+          <Link to="/editor" className={`btn btn-ghost print-page__back-btn ${darkMode ? "print-page__back-btn-dark" : ""}`}>
             <span className="print-page__back-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
                 <path d="M15 6l-6 6 6 6" />
@@ -146,6 +149,7 @@ function PrintPreviewPage({darkMode, toggleTheme}) {
           </Link>
         </motion.aside>
       </div>
+    </div>
     </div>
   );
 }

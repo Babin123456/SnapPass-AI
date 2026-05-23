@@ -234,8 +234,10 @@
 .section-title-light {
 color: #000000;
 }
-/* .section-title-dark {
-} */
+.section-title-dark {
+color: var(--color-text-dark2);
+
+}
 
 .steps-grid {
   display: grid;

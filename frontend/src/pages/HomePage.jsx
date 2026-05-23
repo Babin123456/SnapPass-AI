@@ -137,10 +137,10 @@ function HomePage({darkMode, toggleTheme}) {
       <AIShowcaseSection darkMode = {darkMode} toggleTheme={toggleTheme} chips={chips} iconMap={iconMap} />
 
       {/* ── How it Works ── */}
-      <StepsSection steps={steps} />
+      <StepsSection darkMode = {darkMode} toggleTheme={toggleTheme} steps={steps} />
 
       {/* ── Features ── */}
-      <FeaturesSection features={features} iconMap={iconMap} />
+      <FeaturesSection darkMode = {darkMode} toggleTheme={toggleTheme} features={features} iconMap={iconMap} />
 
       {/* ── CTA Banner ── */}
       <CTABanner />

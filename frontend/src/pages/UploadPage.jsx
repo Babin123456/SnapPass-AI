@@ -23,19 +23,19 @@ function UploadPage({darkMode, toggleTheme}) {
 
   const iconMap = {
     ok: (
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <svg className = {`tips ${darkMode? "tips-dark":""}`} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <rect x="3" y="3" width="18" height="18" rx="6" />
         <path d="M8 12.5l2.5 2.5L16 9" />
       </svg>
     ),
     no: (
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <svg className = {`tips ${darkMode? "tips-dark":""}`} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <rect x="3" y="3" width="18" height="18" rx="6" />
         <path d="M9 9l6 6M15 9l-6 6" />
       </svg>
     ),
     lock: (
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <svg className = {`tips ${darkMode? "tips-dark":""}`} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <rect x="5" y="10" width="14" height="10" rx="3" />
         <path d="M8 10V8a4 4 0 0 1 8 0v2" />
       </svg>
@@ -64,8 +64,8 @@ function UploadPage({darkMode, toggleTheme}) {
   };
 
   return (
-    <div className={`upload-page ${darkMode?"upload-page-dark": "" }`}>
-      
+    <div className= {`upload-toggle ${darkMode?"upload-toggle-dark": ""}`}> 
+    <div className={"upload-page"}>
       <motion.div
         className="upload-page__header"
         variants={fadeUpVariant}
@@ -74,8 +74,8 @@ function UploadPage({darkMode, toggleTheme}) {
         viewport={{ once: true }}
         custom={0.1}
       >
-        <h1 className="section-title">Upload Your Photo</h1>
-        <p className="section-subtitle">
+        <h1 className={`section-title ${darkMode? "section-title-dark": ""}`}>Upload Your Photo</h1>
+        <p className={`section-subtitle ${darkMode? "section-subtitle-dark": ""}`}>
           Choose a clear, front-facing photo. The AI will handle the rest.
         </p>
       </motion.div>
@@ -90,7 +90,7 @@ function UploadPage({darkMode, toggleTheme}) {
         {tips.map(({ type, text }, idx) => (
           <motion.div
             key={text}
-            className="upload-tip"
+            className={`upload-tip ${darkMode? "upload-tip-dark": "upload-tip-light"}`}
             variants={fadeUpVariant}
             initial="hidden"
             whileInView="visible"
@@ -121,7 +121,7 @@ function UploadPage({darkMode, toggleTheme}) {
       </motion.div>
 
       <motion.p
-        className="upload-page__privacy"
+        className={`upload-page__privacy ${darkMode? "upload-page__privacy-dark": ""}`}
         variants={fadeUpVariant}
         initial="hidden"
         whileInView="visible"
@@ -133,6 +133,7 @@ function UploadPage({darkMode, toggleTheme}) {
         </span>
         Your photo is processed locally and never stored without your permission.
       </motion.p>
+    </div>
     </div>
   );
 }

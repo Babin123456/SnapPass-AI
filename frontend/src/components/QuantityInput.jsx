@@ -10,7 +10,7 @@ import './QuantityInput.css';
  *   min      (number)      — minimum value (default 1)
  *   max      (number)      — maximum value (default 24)
  */
-function QuantityInput({ value = 6, onChange, min = 1, max = 24 }) {
+function QuantityInput({ darkMode, toggleTheme, value = 6, onChange, min = 1, max = 24 }) {
   const decrement = () => {
     if (value > min) onChange && onChange(value - 1);
   };

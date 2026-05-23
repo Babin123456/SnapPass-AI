@@ -111,7 +111,8 @@ function EditorPage({darkMode, toggleTheme}) {
   };
 
   return (
-    <div className={`editor-page ${darkMode? "editor-page-dark": "" }`}>
+    <div className={`editor-toggle ${darkMode? "editor-toggle-dark": "" }`}> 
+    <div className="editor-page">
       <motion.div
         className="editor-page__header"
         variants={fadeUpVariant}
@@ -120,14 +121,14 @@ function EditorPage({darkMode, toggleTheme}) {
         viewport={{ once: true }}
         custom={0.1} // Loads first
       >
-        <h1 className="section-title">Edit Your Photo</h1>
-        <p className="section-subtitle">Choose a background and size, then let AI process your photo.</p>
+        <h1 className={`section-title ${darkMode? "section-title-dark": "section-title-light"}`}>Edit Your Photo</h1>
+        <p className={`section-subtitle ${darkMode? "section-subtitle-dark": "section-subtitle-light"}`}>Choose a background and size, then let AI process your photo.</p>
       </motion.div>
 
       <div className="editor-page__layout">
         {/* Preview panel */}
         <motion.section
-          className="editor-page__preview card"
+          className="editor-page__preview"
           aria-label="Photo preview"
           variants={fadeUpVariant}
           initial="hidden"
@@ -188,7 +189,7 @@ function EditorPage({darkMode, toggleTheme}) {
           </button>
 
           <button
-            className="btn btn-primary editor-page__process-btn"
+            className={`btn btn-primary editor-page__process-btn ${darkMode ? "editor-page__process-btn-dark" : ""}`}
             onClick={handleProcess}
             disabled={isProcessing}
           >
@@ -207,6 +208,7 @@ function EditorPage({darkMode, toggleTheme}) {
           </button>
         </motion.aside>
       </div>
+    </div>
     </div>
   );
 }

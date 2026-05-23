@@ -25,7 +25,7 @@
   border-radius: 32px;
 }
 .empty-state__illustration-dark {
-  background-color: rgb(51, 55, 21);
+  background-color: rgba(51, 55, 21, 0.654);
   border-color: #000000;
   color: #ffffff
 }
