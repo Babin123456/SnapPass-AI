@@ -29,11 +29,48 @@ export const processImage = async (req, res, next) => {
       return res.status(400).json({ success: false, message: "filename is required." });
     }
 
-    const safeName = path.basename(filename);
-    const filePath = path.join(__dirname, "..", "..", "uploads", safeName);
+    // 1. Filename validation (alphanumeric, dots, hyphens, and underscores only)
+    const filenameRegex = /^[a-zA-Z0-9_\-\.]+$/;
+    if (!filenameRegex.test(filename)) {
+      return res.status(400).json({ success: false, message: "Invalid filename format." });
+    }
+
+    // 2. Hidden file blocking
+    if (filename.startsWith(".") || path.basename(filename).startsWith(".")) {
+      return res.status(403).json({ success: false, message: "Access denied: Hidden files are blocked." });
+    }
+
+    // 3. Allowed extension whitelist
+    const allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+    const ext = path.extname(filename).toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      return res.status(400).json({ success: false, message: "Access denied: Unsupported file extension." });
+    }
+
+    // 4. Strict directory containment (prevent path traversal completely)
+    const uploadsDir = path.resolve(__dirname, "..", "..", "uploads");
+    const filePath = path.resolve(uploadsDir, filename);
+
+    if (!filePath.startsWith(uploadsDir + path.sep)) {
+      return res.status(403).json({ success: false, message: "Access denied: Path traversal detected." });
+    }
 
     if (!fs.existsSync(filePath)) {
       return res.status(404).json({ success: false, message: "File not found on server." });
+    }
+
+    // 5. Symlink protection & regular file enforcement
+    const stats = fs.lstatSync(filePath);
+    if (stats.isSymbolicLink()) {
+      return res.status(403).json({ success: false, message: "Access denied: Symbolic links are blocked." });
+    }
+    if (!stats.isFile()) {
+      return res.status(400).json({ success: false, message: "Access denied: Target is not a file." });
+    }
+
+    // 6. Authorization checks placeholder
+    if (req.user && req.user.id) {
+      // Future scope: ensure req.user.id has ownership of this uploaded file resource
     }
 
     // Forward to Python AI service
