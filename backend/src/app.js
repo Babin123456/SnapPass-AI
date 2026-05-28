@@ -13,11 +13,15 @@ import printRoutes from './routes/print.routes.js';
 import authRoutes from './routes/auth.routes.js';
 
 import errorMiddleware from './middleware/error.middleware.js';
+import { apiLimiter } from './middleware/rateLimit.middleware.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+
+// Apply rate limiter to all API routes
+app.use('/api', apiLimiter);
 
 
 app.use(helmet());
