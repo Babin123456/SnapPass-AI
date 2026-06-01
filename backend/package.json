@@ -1,7 +1,7 @@
 {
   "name": "snappass-ai-backend",
   "version": "1.0.0",
-  "description": "SnapPass AI \u2014 Express.js backend for passport photo processing",
+  "description": "SnapPass AI — Express.js backend for passport photo processing",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
-    "cloudinary": "^2.0.3",
     "bcryptjs": "^3.0.3",
+    "cloudinary": "^2.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -27,11 +27,12 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "jest": "^29.7.0",
-    "supertest": "^6.3.4",
+    "@babel/preset-env": "^7.24.0",
     "babel-jest": "^29.7.0",
-    "@babel/preset-env": "^7.24.0"
+    "babel-plugin-transform-import-meta": "^2.3.3",
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.4"
   },
   "type": "module"
 }
