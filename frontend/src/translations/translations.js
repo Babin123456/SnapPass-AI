@@ -9,7 +9,7 @@ export const translations = {
     getStarted: 'Get Started',
     language: 'Language',
     history: "History",
-    
+
     heroTitle: 'Open-source AI-powered passport photo studio',
     heroSubtitle:
       'Upload → Auto-process → Generate a print-ready sheet — in seconds.',
@@ -332,6 +332,16 @@ export const translations = {
     uploadFormatsLimit: 'JPEG, PNG, WebP · Max 10 MB',
     showOriginal: "Show Original",
     backToEdit: "Back To Edit",
+
+    testimonialsTitle: 'What Our Users Say',
+
+    testimonialsSubtitle:
+      'Join thousands of satisfied users who trust SnapPass AI for their passport photos',
+
+    review: 'review',
+    reviews: 'reviews',
+
+    writeReview: 'Write a Review',
   },
 
   hi: {
@@ -669,5 +679,14 @@ export const translations = {
     browseFiles: 'फाइल ब्राउज़ करें',
 
     uploadFormatsLimit: 'JPEG, PNG, WebP · अधिकतम 10 MB',
+    testimonialsTitle: 'हमारे उपयोगकर्ता क्या कहते हैं',
+
+    testimonialsSubtitle:
+      'हजारों संतुष्ट उपयोगकर्ताओं के साथ जुड़ें जो अपनी पासपोर्ट फोटो के लिए SnapPass AI पर भरोसा करते हैं',
+
+    review: 'समीक्षा',
+    reviews: 'समीक्षाएँ',
+
+    writeReview: 'समीक्षा लिखें',
   },
 };

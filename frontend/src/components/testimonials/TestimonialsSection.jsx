@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import TestimonialCard from './TestimonialCard';
 import AddTestimonialForm from './AddTestimonialForm';
 import './TestimonialsSection.css';
+import { useLanguage } from '../../context/LanguageContext';
+import { translations } from '../../translations/translations';
 
-const TestimonialsSection = ({ darkMode }) => {  
+const TestimonialsSection = ({ darkMode }) => {
+  const { language } = useLanguage();
+  const t = translations[language];
   const [testimonials, setTestimonials] = useState([]);
   const [showForm, setShowForm] = useState(false);
 
@@ -17,21 +21,30 @@ const TestimonialsSection = ({ darkMode }) => {
           id: 1,
           name: 'Tanya Oberio',
           rating: 5,
-          comment: 'As a photographer and Instagram handler, SnapPassAI is one of the best tools for me. It helps me quickly maintain lot of time with its simple and minimal workflow.',
+          commentEn:
+            'As a photographer and Instagram handler, SnapPassAI is one of the best tools for me. It helps me quickly maintain lot of time with its simple and minimal workflow.',
+          commentHi:
+            'एक फोटोग्राफर और इंस्टाग्राम हैंडलर के रूप में, SnapPassAI मेरे लिए सबसे अच्छे टूल्स में से एक है। इसका सरल और न्यूनतम वर्कफ़्लो मेरा काफी समय बचाता है।',
           date: '2026-05-25T10:00:00Z'
         },
         {
           id: 2,
           name: 'Rahul Sharma',
           rating: 5,
-          comment: 'Amazing tool! Got my passport photo ready in seconds. Highly recommended!',
+          commentEn:
+            'Amazing tool! Got my passport photo ready in seconds. Highly recommended!',
+          commentHi:
+            'शानदार टूल! मेरी पासपोर्ट फोटो कुछ ही सेकंड में तैयार हो गई। अत्यधिक अनुशंसित!',
           date: '2026-05-24T14:30:00Z'
         },
         {
           id: 3,
           name: 'Priya Patel',
           rating: 4,
-          comment: 'Very easy to use. The background removal works perfectly.',
+          commentEn:
+            'Very easy to use. The background removal works perfectly.',
+          commentHi:
+            'उपयोग करने में बहुत आसान। बैकग्राउंड हटाने की सुविधा बेहतरीन तरीके से काम करती है।',
           date: '2026-05-23T09:15:00Z'
         }
       ];
@@ -62,10 +75,10 @@ const TestimonialsSection = ({ darkMode }) => {
       <div className="testimonials-container">
         <div className="testimonials-header">
           <h2 className={`section-title ${darkMode ? 'section-title-dark' : 'section-title-light'}`}>
-            What Our Users Say
+            {t.testimonialsTitle}
           </h2>
           <p className={`testimonials-subtitle ${darkMode ? 'testimonials-subtitle-dark' : 'testimonials-subtitle-light'}`}>
-            Join thousands of satisfied users who trust SnapPass AI for their passport photos
+            {t.testimonialsSubtitle}
           </p>
         </div>
 
@@ -76,7 +89,7 @@ const TestimonialsSection = ({ darkMode }) => {
                 ⭐ {calculateAverageRating()}
               </span>
               <span className={`review-count ${darkMode ? 'review-count-dark' : 'review-count-light'}`}>
-                ({testimonials.length} {testimonials.length === 1 ? 'review' : 'reviews'})
+                ({testimonials.length} {testimonials.length === 1 ? t.review : t.reviews})
               </span>
             </div>
           </div>
@@ -84,26 +97,26 @@ const TestimonialsSection = ({ darkMode }) => {
 
         <div className="testimonials-grid">
           {testimonials.map((testimonial) => (
-            <TestimonialCard 
-              key={testimonial.id} 
-              testimonial={testimonial} 
-              darkMode={darkMode}  
+            <TestimonialCard
+              key={testimonial.id}
+              testimonial={testimonial}
+              darkMode={darkMode}
             />
           ))}
         </div>
 
         {!showForm ? (
-          <button 
+          <button
             className={`write-review-btn ${darkMode ? 'write-review-btn-dark' : 'write-review-btn-light'}`}
             onClick={() => setShowForm(true)}
           >
-            Write a Review
+            {t.writeReview}
           </button>
         ) : (
-          <AddTestimonialForm 
-            onSubmit={addTestimonial} 
+          <AddTestimonialForm
+            onSubmit={addTestimonial}
             onCancel={() => setShowForm(false)}
-            darkMode={darkMode}  
+            darkMode={darkMode}
           />
         )}
       </div>
