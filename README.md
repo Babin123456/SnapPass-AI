@@ -16,6 +16,28 @@ Upload → Auto-process → Generate a print-ready sheet — in seconds.</p>
 
 ---
 
+## 📚 Table of Contents
+
+- [📌 What is SnapPass AI?](#-what-is-snappass-ai)
+- [✨ What It Does](#-what-it-does)
+- [📸 Website Preview](#-website-preview)
+- [🧭 Project Status](#-project-status)
+- [🖥️ Tech Stack](#️%EF%B8%8F-tech-stack)
+- [📁 Folder Structure](#-folder-structure)
+- [🚀 Getting Started](#-getting-started)
+- [🐳 Docker (Compose)](#-docker-compose)
+- [🗺️ App Flow (UI)](#️%EF%B8%8F-app-flow-ui)
+- [📡 API Endpoints](#-api-endpoints)
+- [🌍 Supported Passport Photo Sizes](#-supported-passport-photo-sizes)
+- [🔧 Environment Variables](#-environment-variables)
+- [🛣️ Roadmap](#️%EF%B8%8F-roadmap)
+- [🤝 Contributing](#-contributing)
+- [🏷️ Good First Issues](#️%EF%B8%8F-good-first-issues)
+- [📜 License](#-license)
+- [👨‍💻 Project Admin](#%E2%80%8D-project-admin)
+
+---
+
 ## 📌 What is SnapPass AI?
 
 **SnapPass AI** is a free, open-source web application that lets anyone generate professional passport-quality photos from any selfie or portrait.
