@@ -57,8 +57,7 @@ def assess_face_quality(image_path: str) -> FaceQualityReport:
         return FaceQualityReport(
             passed=False,
             rejection_code="UNREADABLE_IMAGE",
-            rejection_reason=f"Failed to read image headers: {
-                str(e)}",
+            rejection_reason=f"Failed to read image headers: {str(e)}",
             user_hint="The file couldn't be opened. Please verify it isn't corrupted.")
 
     try:
@@ -96,8 +95,7 @@ def assess_face_quality(image_path: str) -> FaceQualityReport:
             passed=False,
             blur_score=blur_score,
             rejection_code="FACE_TOO_BLURRY",
-            rejection_reason=f"Image is too blurry (score: {
-                blur_score:.1f}, minimum: {BLUR_THRESHOLD}).",
+            rejection_reason=f"Image is too blurry (score: {blur_score:.1f}, minimum: {BLUR_THRESHOLD}).",
             user_hint="Take the photo in good lighting and hold the camera steady.")
 
     # 2. Face count detection

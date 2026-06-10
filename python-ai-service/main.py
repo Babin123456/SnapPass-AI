@@ -140,8 +140,7 @@ def generate_sheet():
     # Include a UUID in the filename so concurrent requests using the same
     # preset_id do not race on the same file path.
     output_path = os.path.join(
-        output_dir, f"sheet_{preset_id}_{
-            uuid.uuid4().hex}.jpg")
+        output_dir, f"sheet_{preset_id}_{uuid.uuid4().hex}.jpg")
 
     saved = generate_a4_sheet(
         photo_path=photo_path,

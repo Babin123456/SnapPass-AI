@@ -40,9 +40,7 @@ def _resolve_colour(colour: str) -> tuple:
         return _hex_to_rgba(normalised)
 
     raise ValueError(
-        f"Unsupported background colour '{colour}'. " f"Use one of {
-            list(
-                SUPPORTED_COLOURS.keys())} or a hex string like '#ffffff'.")
+        f"Unsupported background colour '{colour}'. Use one of {list(SUPPORTED_COLOURS.keys())} or a hex string like '#ffffff'.")
 
 
 def _hex_to_rgba(hex_colour: str) -> tuple:

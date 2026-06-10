@@ -68,8 +68,7 @@ def generate_a4_sheet(
     """
     if preset_id not in PRESETS:
         raise ValueError(
-            f"Unknown preset '{preset_id}'. Choose from: {
-                list(PRESETS)}")
+            f"Unknown preset '{preset_id}'. Choose from: {list(PRESETS)}")
 
     preset = PRESETS[preset_id]
     photo_w = mm_to_px(preset["w"])
