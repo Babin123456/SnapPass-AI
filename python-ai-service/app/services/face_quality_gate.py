@@ -66,8 +66,7 @@ def assess_face_quality(image_path: str) -> FaceQualityReport:
         return FaceQualityReport(
             passed=False,
             rejection_code="UNREADABLE_IMAGE",
-            rejection_reason=f"OpenCV failed to read image array: {
-                str(e)}",
+            rejection_reason=f"OpenCV failed to read image array: {str(e)}",
             user_hint="The file is formatted improperly. Please try re-saving it.")
 
     if img is None:
@@ -126,8 +125,7 @@ def assess_face_quality(image_path: str) -> FaceQualityReport:
             face_count=len(faces),
             blur_score=blur_score,
             rejection_code="MULTIPLE_FACES_DETECTED",
-            rejection_reason=f"{
-                len(faces)} faces detected.",
+            rejection_reason=f"{len(faces)} faces detected.",
             user_hint="Please upload a solo portrait with only one person in the frame.")
 
     # 3. Face region size check
