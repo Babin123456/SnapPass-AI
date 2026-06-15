@@ -233,7 +233,9 @@ function Footer({ darkMode }) {
 
               <div className="footer__contact">
                 <Mail size={16} />
-                <span>support@snappassai.com</span>
+                <a href="mailto:support@snappassai.com">
+    support@snappassai.com
+  </a>
               </div>
             </div>
           </div>
