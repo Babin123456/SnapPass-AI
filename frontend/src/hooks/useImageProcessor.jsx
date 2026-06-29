@@ -4,11 +4,12 @@
  * Returns:
  *   { processImage, processedUrl, isProcessing, error, reset }
  *
- * TODO: Wire to real backend POST /api/process once available.
+ * TODO: Updated to real backend async preview endpoints.
  */
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { processPhoto } from '../services/photoService';
+import api from '../services/api';
+
 
 function useImageProcessor() {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -21,39 +22,59 @@ function useImageProcessor() {
     setError(null);
 
     try {
-      if (processedUrlRef.current) {
+      if (processedUrlRef.current?.startsWith('blob:')) {
         URL.revokeObjectURL(processedUrlRef.current);
       }
+      processedUrlRef.current = null;
+      setProcessedUrl(null);
 
-      const blob = await processPhoto({ filename, backgroundColour, photoSizePreset, attire });
+      // 1) Start async job
+      const startResp = await api.post('/process/job', {
+        filename,
+        backgroundColour,
+        photoSizePreset,
+        attire,
+      });
 
-      // `processPhoto` uses axios { responseType: 'blob' }.
-      // If the backend returns JSON errors, it may still arrive as a Blob.
-      // Detect that case and surface a meaningful message.
-      const contentType = blob?.type || '';
-      const looksLikeJson = contentType.includes('application/json');
+      const jobId = startResp?.data?.data?.jobId;
+      if (!jobId) throw new Error('Failed to start AI processing.');
 
-      if (looksLikeJson) {
-        const text = await blob.text();
-        try {
-          const parsed = JSON.parse(text);
-          const message = parsed?.message || parsed?.error?.message || 'Processing failed.';
-          throw new Error(message);
-        } catch {
-          throw new Error(text || 'Processing failed.');
+      // 2) Poll until done
+      const pollIntervalMs = 1000;
+      // Safety timeout ~2 minutes
+      const timeoutMs = 120000;
+      const startTs = Date.now();
+
+      while (true) {
+        if (Date.now() - startTs > timeoutMs) {
+          throw new Error('Processing timed out. Please try again.');
         }
-      }
 
-      const url = URL.createObjectURL(blob);
-      processedUrlRef.current = url;
-      setProcessedUrl(url);
-      return url;
+        const statusResp = await api.get(`/process/job/${jobId}`);
+        const statusData = statusResp?.data?.data;
+
+        if (!statusData) throw new Error('Invalid status response.');
+
+        if (statusData.status === 'done') {
+          const nextUrl = statusData.processedUrl;
+          if (!nextUrl) throw new Error('Processed image is missing.');
+          processedUrlRef.current = nextUrl;
+          setProcessedUrl(nextUrl);
+          return nextUrl;
+        }
+
+        if (statusData.status === 'failed') {
+          throw new Error(statusData.error?.message || 'Processing failed.');
+        }
+
+        // queued | processing
+        await new Promise((r) => setTimeout(r, pollIntervalMs));
+      }
     } catch (err) {
       setError(err.message || 'Processing failed. Is the AI service running?');
-      if (processedUrlRef.current) {
-        URL.revokeObjectURL(processedUrlRef.current);
-        processedUrlRef.current = null;
-      }
+      // No object URL cleanup here (we now use server URLs)
+      processedUrlRef.current = null;
+      setProcessedUrl(null);
       throw err;
     } finally {
       setIsProcessing(false);
@@ -62,10 +83,10 @@ function useImageProcessor() {
 
 
   const reset = useCallback(() => {
-    if (processedUrlRef.current) {
+    if (processedUrlRef.current?.startsWith('blob:')) {
       URL.revokeObjectURL(processedUrlRef.current);
-      processedUrlRef.current = null;
     }
+    processedUrlRef.current = null;
     setProcessedUrl(null);
     setError(null);
   }, []);

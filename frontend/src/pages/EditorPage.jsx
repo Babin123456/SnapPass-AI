@@ -49,7 +49,7 @@ function EditorPage({ darkMode, toggleTheme }) {
   const [attire, setAttire] = useState(
     savedSession?.attire || 'none'
   );
-  const { processImage, isProcessing, error } = useImageProcessor();
+  const { processImage, processedUrl, isProcessing, error } = useImageProcessor();
 
   const [compliance, setCompliance] = useState(null);
   const [complianceLoading, setComplianceLoading] = useState(false);
@@ -140,8 +140,7 @@ function EditorPage({ darkMode, toggleTheme }) {
         return;
       }
 
-      const processedUrl = await processImage({
-
+      const nextProcessedUrl = await processImage({
         filename: photoData.filename,
         backgroundColour: background,
         photoSizePreset: sizePreset,
@@ -150,7 +149,7 @@ function EditorPage({ darkMode, toggleTheme }) {
 
       navigate('/print-preview', {
         state: {
-          processedUrl,
+          processedUrl: nextProcessedUrl,
           filename: photoData.filename,
           background,
           sizePreset,
@@ -219,9 +218,9 @@ function EditorPage({ darkMode, toggleTheme }) {
             viewport={{ once: true }}
             custom={0.2}
           >
-          <PhotoPreview
+            <PhotoPreview
               originalUrl={photoData.localUrl}
-              processedUrl={null}
+              processedUrl={processedUrl}
               isProcessing={isProcessing}
             />
 
