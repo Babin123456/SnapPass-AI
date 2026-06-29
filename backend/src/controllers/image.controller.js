@@ -156,7 +156,6 @@ export const processImage = async (req, res, next) => {
 export const getPreview = async (req, res, next) => {
   try {
     const { filename } = req.params;
-    // TODO: Implement preview retrieval from processed images directory
     res.json({
       success: true,
       data: { filename, previewUrl: `/uploads/processed/${filename}` },
@@ -165,3 +164,163 @@ export const getPreview = async (req, res, next) => {
     next(error);
   }
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Async job endpoints (real-time preview)
+// ─────────────────────────────────────────────────────────────────────────────
+
+
+
+import { createJob, getJob, updateJob } from '../utils/processJobStore.js';
+
+function isAllowedAttire(attire) {
+  return ["none", "male_suit", "female_blazer", "male_bowtie"].includes(attire);
+}
+
+function safeFileName(filename) {
+  const filenameRegex = /^[a-zA-Z0-9_\-\.]+$/;
+  if (!filenameRegex.test(filename)) return null;
+  if (filename.startsWith('.') || path.basename(filename).startsWith('.')) return null;
+  const allowedExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+  const ext = path.extname(filename).toLowerCase();
+  if (!allowedExtensions.includes(ext)) return null;
+  return filename;
+}
+
+export const createProcessJob = async (req, res, next) => {
+  try {
+    const {
+      filename,
+      backgroundColour = 'white',
+      photoSizePreset = '35x45',
+      attire = 'none',
+    } = req.body || {};
+
+    const safeFilename = safeFileName(filename);
+    if (!safeFilename) {
+      return res.status(400).json({ success: false, message: 'Invalid filename format.' });
+    }
+    if (!isAllowedAttire(attire)) {
+      return res.status(400).json({ success: false, message: 'Invalid attire selection.' });
+    }
+
+    const jobId = createJob({
+      payload: {
+        filename: safeFilename,
+        backgroundColour,
+        photoSizePreset,
+        attire,
+      },
+    });
+
+    // Start the job in the background (non-blocking HTTP response)
+    updateJob(jobId, { status: 'processing' });
+
+    const run = async () => {
+      try {
+        const job = getJob(jobId);
+        if (!job) throw new Error('Job not found');
+
+        const { filename, backgroundColour, photoSizePreset, attire } = job.payload;
+
+        // Reuse existing sync pipeline by calling the same AI endpoint logic.
+        // We forward a multipart request to the Python AI service like processImage does.
+        const uploadsDir = path.resolve(localDirname, '..', '..', 'uploads');
+        const filePath = path.resolve(uploadsDir, filename);
+
+        const relative = path.relative(uploadsDir, filePath);
+        if (relative.startsWith('..') || path.isAbsolute(relative)) {
+          throw new Error('Access denied: Path traversal detected.');
+        }
+
+        // 1) Face quality gate (same as processImage)
+        try {
+          const qualityCheck = await axios.post(
+            `${config.aiServiceUrl}/face-quality-check`,
+            { file_path: filePath },
+            { headers: { 'Content-Type': 'application/json' } }
+          );
+          if (!qualityCheck.data.passed) {
+            const err = qualityCheck.data;
+            throw new Error(err?.error?.message || err?.message || err?.rejection_reason || 'Photo failed compliance checks');
+          }
+        } catch (gateError) {
+          if (gateError?.response?.status === 422) {
+            const data = gateError.response.data;
+            throw new Error(data?.error?.message || data?.message || 'Photo did not pass quality checks');
+          }
+        }
+
+        const form = new FormData();
+        form.append('image', fs.createReadStream(filePath));
+        form.append('background_colour', backgroundColour);
+        form.append('photo_size_preset', photoSizePreset);
+        form.append('attire', attire);
+
+        const aiResponse = await axios.post(`${config.aiServiceUrl}/remove-bg`, form, {
+          headers: form.getHeaders(),
+          responseType: 'arraybuffer',
+        });
+
+        // Save processed image to /uploads/processed/ for later fetching
+        const processedDir = path.resolve(uploadsDir, 'processed');
+        await fs.promises.mkdir(processedDir, { recursive: true });
+        const outExt = 'png';
+        const outFilename = `${path.parse(filename).name}_${jobId}.${outExt}`;
+        const outPath = path.join(processedDir, outFilename);
+        await fs.promises.writeFile(outPath, Buffer.from(aiResponse.data));
+
+        const processedUrl = `/uploads/processed/${outFilename}`;
+        updateJob(jobId, { status: 'done', processedUrl });
+
+        // Cleanup original uploads file (optional; mirrors processImage behavior)
+        const shouldCleanupLocal = Boolean(
+          config.cloudinary?.cloudName &&
+          config.cloudinary?.apiKey &&
+          config.cloudinary?.apiSecret
+        );
+        if (shouldCleanupLocal) {
+          try {
+            await fs.promises.unlink(filePath);
+          } catch (_) {}
+        }
+      } catch (err) {
+        updateJob(jobId, {
+          status: 'failed',
+          error: {
+            message: err?.message || 'Processing failed.',
+          },
+        });
+      }
+    };
+
+    // Fire and forget
+    Promise.resolve().then(run);
+
+    res.status(202).json({ success: true, data: { jobId } });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getProcessJobStatus = async (req, res, next) => {
+  try {
+    const { jobId } = req.params;
+    if (!jobId) return res.status(400).json({ success: false, message: 'jobId is required.' });
+
+    const job = getJob(jobId);
+    if (!job) return res.status(404).json({ success: false, message: 'Job not found.' });
+
+    res.json({
+      success: true,
+      data: {
+        status: job.status,
+        processedUrl: job.processedUrl,
+        error: job.error,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

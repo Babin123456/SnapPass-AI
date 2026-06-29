@@ -12,6 +12,8 @@ import os from 'os';
 
 import uploadRoutes from './routes/upload.routes.js';
 import imageRoutes from './routes/image.routes.js';
+import processRoutes from './routes/process.routes.js';
+
 import printRoutes from './routes/print.routes.js';
 import authRoutes from './routes/auth.routes.js';
 import healthRoutes from './routes/health.routes.js';
@@ -113,6 +115,7 @@ app.get("/health", (_req, res) => {
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/upload", uploadRoutes);
 app.use("/api/v1/process", imageRoutes);
+app.use("/api/v1/process", processRoutes);
 app.use("/api/v1/print", printRoutes);
 app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/testimonials", testimonialRoutes);
@@ -123,10 +126,12 @@ app.use("/api/v1/compliance", complianceRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/upload", uploadRoutes);
 app.use("/api/process", imageRoutes);
+app.use("/api/process", processRoutes);
 app.use("/api/print", printRoutes);
 app.use("/api/health", healthRoutes);
 app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/compliance", complianceRoutes);
+
 
 
 app.use((req, _res, next) => {
