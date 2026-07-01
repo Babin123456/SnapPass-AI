@@ -82,6 +82,12 @@ function AppRoutes({ darkMode, toggleTheme }) {
             }
           />
           <Route
+            path="/settings"
+            element={
+              <SettingsPage darkMode={darkMode} toggleTheme={toggleTheme} />
+            }
+          />
+          <Route
             path="/compare-requirements"
             element={
               <PassportComparatorPage
