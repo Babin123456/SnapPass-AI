@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import QuantityInput from '../components/QuantityInput';
-import PrintButton from '../components/PrintButton';
+import DownloadPackagePanel from '../components/DownloadPackagePanel';
 import './PrintPreviewPage.css';
 import EmptyState from '../components/EmptyState';
 import { motion } from 'framer-motion';
@@ -251,13 +251,7 @@ function PrintPreviewPage({ darkMode, toggleTheme }) {
 
             <hr className="divider" />
 
-            <PrintButton
-              onClick={handleGenerateSheet}
-              isLoading={isGenerating}
-              darkMode={darkMode}
-              toggleTheme={toggleTheme}
-              disabled={isGenerating || strength === 0}
-            />
+            <DownloadPackagePanel processedUrl={state?.processedUrl || savedSession?.processedUrl} originalFileName={state?.filename || savedSession?.filename} />
 
             <button
               onClick={handlePrintDirect}
