@@ -11,8 +11,11 @@ import re
 import uuid
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import config
 from app.routes.process_routes import process_bp
+from app.routes.compliance_routes import compliance_bp
 from app.services.errors import ai_error_handler
 
 logging.basicConfig(
@@ -68,12 +71,37 @@ def _safe_photo_path(raw: str) -> str:
 
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = config.MAX_FILE_MB * 1024 * 1024
 CORS(app)
+
+limiter = Limiter(
+    key_func=get_remote_address,
+    app=app,
+    default_limits=["60 per minute"],
+    storage_uri="memory://",
+)
+
+
+@app.errorhandler(429)
+def rate_limit_handler(e):
+    return jsonify({"error": "Too many requests. Please slow down.", "retry_after": 60}), 429, {"Retry-After": "60"}
+
+
+@app.before_request
+def check_payload_size():
+    max_bytes = config.MAX_FILE_MB * 1024 * 1024
+    if request.content_length and request.content_length > max_bytes:
+        return jsonify({
+            "error": f"Payload too large. Maximum allowed: {config.MAX_FILE_MB} MB."
+        }), 413
+
 
 os.makedirs(config.UPLOAD_DIR, exist_ok=True)
 
 # Blueprints
 app.register_blueprint(process_bp)
+app.register_blueprint(compliance_bp)
+
 
 
 # Health Check
@@ -84,6 +112,7 @@ def health():
 
 # Face Quality Gate
 @app.route("/face-quality-check", methods=["POST"])
+@limiter.limit("10 per minute")
 def face_quality_check():
     from app.services.face_quality_gate import assess_face_quality
 
@@ -109,6 +138,7 @@ def face_quality_check():
 
 # Sheet Generator
 @app.route("/generate-sheet", methods=["POST"])
+@limiter.limit("10 per minute")
 @ai_error_handler
 def generate_sheet():
     from app.services.sheet_generator import generate_a4_sheet
@@ -167,6 +197,9 @@ def generate_sheet():
     response.call_on_close(_delete_sheet)
     return response
 
+
+
+# NOTE: Compliance endpoint wired via Blueprint above.
 
 # Run
 if __name__ == "__main__":

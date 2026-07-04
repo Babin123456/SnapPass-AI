@@ -1,21 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UploadBox from '../components/UploadBox';
-import LoadingSpinner from '../components/LoadingSpinner';
-import usePhotoUpload from '../hooks/usePhotoUpload';
-import './UploadPage.css';
 import { motion } from 'framer-motion';
-
-import { tips, iconMap } from '../data/UploadPageData';
-import { fadeUpVariant } from '../animations/variants.js';
+import UploadBox from '../components/UploadBox';
+import PhotoPreview from '../components/PhotoPreview';
+import UploadProgress from '../components/UploadProgress';
+import usePhotoUpload from '../hooks/usePhotoUpload';
+import { compressImage } from '../utils/imageCompression';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../translations/translations';
-import { saveSession } from '../utils/sessionManager';
+import { tips, iconMap } from '../data/UploadPageData';
+import './UploadPage.css';
 
-/**
- * UploadPage — Step 1 of the flow.
- * User selects a photo; we create a local object URL and navigate to EditorPage.
- */
 function UploadPage({ darkMode, toggleTheme }) {
   const { language } = useLanguage();
   const t = translations[language];
@@ -29,105 +24,100 @@ function UploadPage({ darkMode, toggleTheme }) {
     { type: 'no', text: t.tipAvoidAccessories },
   ];
 
-  const iconMap = {
-    ok: (
-      <svg
-        className={`tips ${darkMode ? 'tips-dark' : ''}`}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <rect x="3" y="3" width="18" height="18" rx="6" />
-        <path d="M8 12.5l2.5 2.5L16 9" />
-      </svg>
-    ),
-    no: (
-      <svg
-        className={`tips ${darkMode ? 'tips-dark' : ''}`}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <rect x="3" y="3" width="18" height="18" rx="6" />
-        <path d="M9 9l6 6M15 9l-6 6" />
-      </svg>
-    ),
-    lock: (
-      <svg
-        className={`tips ${darkMode ? 'tips-dark' : ''}`}
-        viewBox="0 0 24 24"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <rect x="5" y="10" width="14" height="10" rx="3" />
-        <path d="M8 10V8a4 4 0 0 1 8 0v2" />
-      </svg>
-    ),
+  const handleFileSelect = async (file) => {
+    reset();
+    const previewUrl = URL.createObjectURL(file);
+    setLocalPreview(previewUrl);
+    try {
+      const compressed = await compressImage(file, { maxWidth: 2048, maxHeight: 2048, quality: 0.92 });
+      await uploadFile(compressed);
+    } catch (err) {
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
+      setLocalPreview(null);
+    }
   };
-  useEffect(() => {
-    if (!uploadedFile) return;
 
-    saveSession({
-      step: 'upload',
-      localUrl: uploadedFile.localUrl,
-      filename: uploadedFile.filename,
-      fileSize: uploadedFile.size,
-    });
+  const handleProceed = () => {
+    if (uploadedFile) {
+      navigate('/editor', {
+        state: {
+          filename: uploadedFile.filename,
+          fileUrl: uploadedFile.fileUrl,
+          localUrl: uploadedFile.localUrl || localPreview,
+        },
+      });
+    }
+  };
 
-    navigate('/editor', {
-      state: {
-        localUrl: uploadedFile.localUrl,
-        filename: uploadedFile.filename,
-        fileSize: uploadedFile.size,
-      },
-    });
-  }, [uploadedFile, navigate]);
+  const displayUrl = uploadedFile?.localUrl || localPreview;
+  const fadeUp = {
+    hidden: { opacity: 0, y: 24 },
+    visible: (delay = 0) => ({ opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut', delay } }),
+  };
 
   return (
     <div className={`upload-toggle ${darkMode ? 'upload-toggle-dark' : ''}`}>
-      <div className={'upload-page'}>
+      <div className="upload-page page-content">
         <motion.div
           className="upload-page__header"
-          variants={fadeUpVariant}
+          variants={fadeUp}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
+          animate="visible"
           custom={0.1}
         >
-          <h1
-            className={`section-title ${darkMode ? 'section-title-dark' : ''}`}
-          >
-            {t.uploadTitle}
+          <h1 className={`section-title ${darkMode ? 'section-title-dark' : 'section-title-light'}`}>
+            {t.uploadPhoto}
           </h1>
-          <p
-            className={`section-subtitle ${darkMode ? 'section-subtitle-dark' : ''}`}
-          >
+          <p className={`section-subtitle ${darkMode ? 'section-subtitle-dark' : 'section-subtitle-light'}`}>
             {t.uploadSubtitle}
           </p>
         </motion.div>
+
+        <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0.2}>
+          {displayUrl ? (
+            <PhotoPreview
+              imageUrl={displayUrl}
+              filename={uploadedFile?.filename || 'preview'}
+              onReset={reset}
+              onProceed={handleProceed}
+              isUploading={isUploading}
+              darkMode={darkMode}
+            />
+          ) : (
+            <>
+              <UploadBox onFileSelect={handleFileSelect} />
+              <UploadProgress progress={uploadProgress} darkMode={darkMode} />
+            </>
+          )}
+        </motion.div>
+
         {error && (
-          <p className="upload-page__error" role="alert">
+          <motion.div
+            className="upload-page__error"
+            role="alert"
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.25}
+          >
             {error}
-          </p>
+          </motion.div>
         )}
 
-        {/* Tips */}
-        <div className="upload-page__tips">
-          {tips.map(({ type, text }, idx) => (
-            <motion.div
-              key={text}
-              className={`upload-tip ${darkMode ? 'upload-tip-dark' : 'upload-tip-light'}`}
-              variants={fadeUpVariant}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              custom={0.2 + idx * 0.1} // Staggers each tip by 100ms
-            >
+        <motion.div
+          className="upload-page__tips"
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
+          custom={0.3}
+        >
+          {tips.map(({ type, text }) => (
+            <div key={text} className={`upload-tip ${darkMode ? 'upload-tip-dark' : 'upload-tip-light'}`}>
               <span className="upload-tip__icon" aria-hidden="true">
                 {iconMap[type]}
               </span>
               <span className="upload-tip__text">{text}</span>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -148,19 +138,18 @@ function UploadPage({ darkMode, toggleTheme }) {
           )}
         </motion.div>
 
-        <motion.p
+        <motion.div
           className={`upload-page__privacy ${darkMode ? 'upload-page__privacy-dark' : ''}`}
-          variants={fadeUpVariant}
+          variants={fadeUp}
           initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.6}
+          animate="visible"
+          custom={0.4}
         >
           <span className="upload-page__privacy-icon" aria-hidden="true">
             {iconMap.lock}
           </span>
-          {t.privacyMessage}
-        </motion.p>
+          <span>{t.uploadPrivacy}</span>
+        </motion.div>
       </div>
     </div>
   );
