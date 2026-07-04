@@ -21,6 +21,7 @@ function PrintPreviewPage({ darkMode, toggleTheme }) {
   const t = translations[language] || translations.en;
   const { state } = useLocation();
   const savedSession = getSession();
+  useDocumentMeta({ title: 'Print Preview', description: 'Preview and print your passport photos on A4 paper.' });
 
   const [quantity, setQuantity] = useState(savedSession?.quantity || 6);
   const [layout, setLayout] = useState('a4');
