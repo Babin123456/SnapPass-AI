@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { sanitizeInput } from '../middleware/sanitize.middleware.js';
 import authRoutes from './auth.routes.js';
 import uploadRoutes from './upload.routes.js';
 import imageRoutes from './image.routes.js';
@@ -11,6 +12,7 @@ import uploadHistoryRoutes from './uploadHistory.routes.js';
 
 const router = Router();
 
+router.use(sanitizeInput);
 router.use('/auth', authRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/process', imageRoutes);
