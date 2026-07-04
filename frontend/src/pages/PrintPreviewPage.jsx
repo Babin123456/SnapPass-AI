@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import QuantityInput from '../components/QuantityInput';
-import PrintButton from '../components/PrintButton';
-import PrintLayoutSelector from '../components/PrintLayoutSelector';
+import DownloadPackagePanel from '../components/DownloadPackagePanel';
+import './PrintPreviewPage.css';
 import EmptyState from '../components/EmptyState';
 import ConfirmModal from '../components/ConfirmModal';
 import { motion } from 'framer-motion';
@@ -189,12 +189,48 @@ function PrintPreviewPage({ darkMode, toggleTheme }) {
 
             <hr className="divider" />
 
-            <PrintButton
-              onClick={() => setShowConfirm(true)}
-              isLoading={isGenerating}
-              darkMode={darkMode}
-              disabled={isGenerating}
-            />
+            <div className="password-section">
+              <label className="print-info-label">{t.securePassword}</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={t.enterPassword}
+                className="password-input"
+              />
+              <div className="password-meter">
+                <div
+                  className={`password-meter__fill ${
+                    strength <= 1
+                      ? 'password-meter__fill--weak'
+                      : strength === 2
+                        ? 'password-meter__fill--medium'
+                        : strength === 3
+                          ? 'password-meter__fill--strong'
+                          : 'password-meter__fill--excellent'
+                  }`}
+                  style={{ width: `${(strength / 4) * 100}%` }}
+                />
+              </div>
+              <span
+                aria-live="polite"
+                className={`password-feedback ${
+                  strength <= 1
+                    ? 'password-feedback--weak'
+                    : strength === 2
+                      ? 'password-feedback--medium'
+                      : strength === 3
+                        ? 'password-feedback--strong'
+                        : 'password-feedback--excellent'
+                }`}
+              >
+                {strengthLabel}
+              </span>
+            </div>
+
+            <hr className="divider" />
+
+            <DownloadPackagePanel processedUrl={state?.processedUrl || savedSession?.processedUrl} originalFileName={state?.filename || savedSession?.filename} />
 
             <button
               onClick={handlePrintDirect}
