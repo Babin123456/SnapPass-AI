@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './AdminDashboard.css';
 import { useLanguage } from '../context/LanguageContext';
+import { useTheme } from '../context/ThemeContext';
 import { translations } from '../translations/translations';
 
 /**
@@ -8,7 +9,8 @@ import { translations } from '../translations/translations';
  * Shows summary stats and a table of recent uploads.
  * Backend integration pending — contributors welcome!
  */
-function AdminDashboard({ darkMode, toggleTheme }) {
+function AdminDashboard() {
+  const { darkMode } = useTheme();
   const { language } = useLanguage();
   const t = translations[language];
   const [activeTab, setActiveTab] = useState('overview');

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './SettingsPage.css';
 import { motion } from 'framer-motion';
+import { useTheme } from '../context/ThemeContext';
 
-function SettingsPage({ darkMode, toggleTheme }) {
+function SettingsPage() {
+  const { darkMode, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('preferences');
   const [fullName, setFullName] = useState('John Doe');
   const [email, setEmail] = useState('john.doe@example.com');
