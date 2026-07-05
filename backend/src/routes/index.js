@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { sanitizeInput } from '../middleware/sanitize.middleware.js';
 import authRoutes from './auth.routes.js';
 import uploadRoutes from './upload.routes.js';
 import imageRoutes from './image.routes.js';
@@ -9,9 +10,11 @@ import complianceRoutes from './compliance.routes.js';
 import testimonialRoutes from './testimonial.routes.js';
 import uploadHistoryRoutes from './uploadHistory.routes.js';
 import auditRoutes from './audit.routes.js';
+import presetsRoutes from './presets.routes.js';
 
 const router = Router();
 
+router.use(sanitizeInput);
 router.use('/auth', authRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/process', imageRoutes);
@@ -21,6 +24,7 @@ router.use('/compliance', complianceRoutes);
 router.use('/testimonials', testimonialRoutes);
 router.use('/upload-history', uploadHistoryRoutes);
 router.use('/audit-logs', auditRoutes);
+router.use('/presets', presetsRoutes);
 
 export { healthRoutes };
 export default router;
