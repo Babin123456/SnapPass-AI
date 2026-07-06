@@ -52,3 +52,46 @@ export const uploadLimiter = rateLimit({
   legacyHeaders: false,
   handler: buildHandler(15),
 });
+
+/**
+ * Stricter limit for authentication routes to prevent brute-force attacks:
+ *   POST /api/auth/login
+ *   POST /api/auth/register
+ */
+export const authLimiter = rateLimit({
+  skip: () => isTest,
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: buildHandler(15),
+});
+
+/**
+ * Strictest limit for OTP actions to prevent spam and cost explosion:
+ *   POST /api/auth/password-reset-request
+ *   POST /api/auth/verify-otp
+ *   POST /api/auth/password-reset
+ */
+export const otpActionLimiter = rateLimit({
+  skip: () => isTest,
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // Limit each IP to 5 requests per windowMs
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: buildHandler(60),
+});
+
+/**
+ * Limit for testimonial submissions to prevent spam:
+ *   POST /api/testimonials
+ *   PUT  /api/testimonials
+ */
+export const testimonialSubmissionLimiter = rateLimit({
+  skip: () => isTest,
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5, // Limit each IP to 5 testimonial submissions per hour
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: buildHandler(60),
+});

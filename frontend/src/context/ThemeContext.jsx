@@ -1,4 +1,10 @@
-import React, { createContext, useState, useEffect, useCallback, useContext } from 'react';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useCallback,
+  useContext,
+} from 'react';
 
 const ThemeContext = createContext(null);
 
@@ -7,12 +13,13 @@ const STORAGE_KEY = 'theme';
 function getInitialTheme() {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === 'dark' || stored === 'light') return stored;
-  if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) return 'dark';
+  if (window.matchMedia?.('(prefers-color-scheme: dark)').matches)
+    return 'dark';
   return 'light';
 }
 
 export const ThemeProvider = ({ children }) => {
-  const [darkMode, setDarkMode] = useState(getInitialTheme === 'dark');
+  const [darkMode, setDarkMode] = useState(() => getInitialTheme() === 'dark');
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
@@ -25,11 +32,14 @@ export const ThemeProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    document.documentElement.setAttribute(
+      'data-theme',
+      darkMode ? 'dark' : 'light'
+    );
   }, [darkMode]);
 
   const toggleTheme = useCallback(() => {
-    setDarkMode(prev => {
+    setDarkMode((prev) => {
       const next = !prev;
       localStorage.setItem(STORAGE_KEY, next ? 'dark' : 'light');
       return next;

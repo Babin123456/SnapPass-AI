@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import AppRoutes from './routes/AppRoutes';
@@ -28,11 +29,13 @@ function AppContent() {
 
 function App() {
   return (
-    <ToastProvider>
-      <ThemeProvider>
-        <AppContent />
-      </ThemeProvider>
-    </ToastProvider>
+    <BrowserRouter>
+      <ToastProvider>
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
+      </ToastProvider>
+    </BrowserRouter>
   );
 }
 

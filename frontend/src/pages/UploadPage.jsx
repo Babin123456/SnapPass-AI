@@ -8,15 +8,22 @@ import usePhotoUpload from '../hooks/usePhotoUpload';
 import { compressImage } from '../utils/imageCompression';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../translations/translations';
-import { tips, iconMap } from '../data/UploadPageData';
+import { iconMap } from '../data/UploadPageData';
 import './UploadPage.css';
 
 function UploadPage({ darkMode, toggleTheme }) {
   const { language } = useLanguage();
   const t = translations[language];
   const navigate = useNavigate();
-  const { uploadFile, uploadedFile, isUploading, error, uploadProgress } =
-    usePhotoUpload();
+  const {
+    uploadFile,
+    uploadedFile,
+    isUploading,
+    error,
+    uploadProgress,
+    reset,
+  } = usePhotoUpload();
+  const [localPreview, setLocalPreview] = useState(null);
 
   const tips = [
     { type: 'ok', text: t.tipPlainBg },
@@ -24,6 +31,15 @@ function UploadPage({ darkMode, toggleTheme }) {
     { type: 'ok', text: t.tipNeutralExpression },
     { type: 'no', text: t.tipAvoidAccessories },
   ];
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 24 },
+    visible: (delay = 0) => ({
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: 'easeOut', delay },
+    }),
+  };
 
   const handleFileSelect = async (file) => {
     reset();
@@ -55,14 +71,6 @@ function UploadPage({ darkMode, toggleTheme }) {
   };
 
   const displayUrl = uploadedFile?.localUrl || localPreview;
-  const fadeUp = {
-    hidden: { opacity: 0, y: 24 },
-    visible: (delay = 0) => ({
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6, ease: 'easeOut', delay },
-    }),
-  };
 
   return (
     <div className={`upload-toggle ${darkMode ? 'upload-toggle-dark' : ''}`}>
@@ -140,26 +148,6 @@ function UploadPage({ darkMode, toggleTheme }) {
               <span className="upload-tip__text">{text}</span>
             </div>
           ))}
-        </motion.div>
-
-        {/* Upload Box (Wrapped in a motion div to animate together) */}
-        <motion.div
-          variants={fadeUpVariant}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          custom={0.5} // Loads after the tips
-        >
-          {isUploading ? (
-            <div className="upload-progress">
-              <div
-                className="upload-progress-bar"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-            </div>
-          ) : (
-            <UploadBox onFileSelect={uploadFile} />
-          )}
         </motion.div>
 
         <motion.div

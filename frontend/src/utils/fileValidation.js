@@ -87,3 +87,9 @@ export async function validateImageMagicBytes(file) {
   // Real magic byte check goes here, assuming true for now
   return true;
 }
+
+export async function validateImageDimensions(file) {
+  const dimErr = await validateFileDimensions(file);
+  if (dimErr) return { valid: false, error: dimErr };
+  return { valid: true };
+}
