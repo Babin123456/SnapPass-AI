@@ -4,11 +4,12 @@
  */
 
 import express from "express";
-import { complianceCheck } from "../controllers/compliance.controller.js";
+import { complianceCheck, complianceAutoCorrect } from "../controllers/compliance.controller.js";
 
 const router = express.Router();
 
 router.post("/check", complianceCheck);
+router.post("/auto-correct", complianceAutoCorrect);
 
 export default router;
 

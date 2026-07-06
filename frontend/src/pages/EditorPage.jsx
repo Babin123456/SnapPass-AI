@@ -10,6 +10,7 @@ import AttireSelector from '../components/AttireSelector';
 import CompliancePanel from '../components/CompliancePanel';
 import useImageProcessor from '../hooks/useImageProcessor';
 import { iconMap, backgroundHexMap } from '../data/EditorPageData';
+import api from '../services/api';
 import './EditorPage.css';
 
 const SIZE_PRESETS = [
@@ -33,6 +34,63 @@ function EditorPage({ darkMode, toggleTheme }) {
   const [sizePreset, setSizePreset] = useState('35x45');
   const [attire, setAttire] = useState('none');
   const [filename, setFilename] = useState(state?.filename || '');
+  const [complianceData, setComplianceData] = useState(null);
+  const [complianceLoading, setComplianceLoading] = useState(false);
+  const [complianceError, setComplianceError] = useState(null);
+  const [cacheBuster, setCacheBuster] = useState(0);
+
+  const apiBaseUrl = import.meta.env.VITE_API_URL ?? (import.meta.env.DEV ? 'http://localhost:5005/api' : '/api');
+  const backendRoot = apiBaseUrl.replace(/\/api\/?$/, '');
+  const baseImageUrl = filename ? `${backendRoot}/uploads/${filename}` : '';
+  const currentImageUrl = processedUrl 
+    ? `${backendRoot}${processedUrl}?t=${cacheBuster}` 
+    : (baseImageUrl ? `${baseImageUrl}?t=${cacheBuster}` : (state?.localUrl || ''));
+
+  const runComplianceCheck = useCallback(async (fileToCheck) => {
+    if (!fileToCheck) return;
+    setComplianceLoading(true);
+    setComplianceError(null);
+    try {
+      const resp = await api.post('/compliance/check', {
+        filename: fileToCheck,
+        sizePreset: sizePreset
+      });
+      if (resp.data?.success) {
+        setComplianceData(resp.data.data);
+      } else {
+        setComplianceError(resp.data?.message || 'Compliance check failed');
+      }
+    } catch (err) {
+      setComplianceError(err.message || 'Failed to check compliance.');
+    } finally {
+      setComplianceLoading(false);
+    }
+  }, [sizePreset]);
+
+  useEffect(() => {
+    runComplianceCheck(filename);
+  }, [filename, sizePreset, cacheBuster, runComplianceCheck]);
+
+  const handleAutoCorrect = useCallback(async (issue) => {
+    if (!filename) return;
+    setComplianceLoading(true);
+    setComplianceError(null);
+    try {
+      const resp = await api.post('/compliance/auto-correct', {
+        filename,
+        issue
+      });
+      if (resp.data?.success) {
+        setCacheBuster(prev => prev + 1);
+      } else {
+        setComplianceError(resp.data?.message || 'Auto-correct failed');
+        setComplianceLoading(false);
+      }
+    } catch (err) {
+      setComplianceError(err.message || 'Failed to auto-correct.');
+      setComplianceLoading(false);
+    }
+  }, [filename]);
 
   useEffect(() => {
     if (state?.filename) setFilename(state.filename);
@@ -111,17 +169,98 @@ function EditorPage({ darkMode, toggleTheme }) {
               }}
             >
               {state?.localUrl || filename ? (
-                <img
-                  src={processedUrl || state?.localUrl}
-                  alt="Preview"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'contain',
-                    transition: 'opacity 0.3s ease',
-                    opacity: isProcessing ? 0.5 : 1,
-                  }}
-                />
+                <div style={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '100%', overflow: 'hidden' }}>
+                  <div style={{ position: 'relative', display: 'inline-block', maxWidth: '100%', maxHeight: '100%' }}>
+                    <img
+                      src={currentImageUrl}
+                      alt="Preview"
+                      style={{
+                        display: 'block',
+                        maxWidth: '100%',
+                        maxHeight: '450px',
+                        objectFit: 'contain',
+                        transition: 'opacity 0.3s ease',
+                        opacity: isProcessing || complianceLoading ? 0.5 : 1,
+                      }}
+                    />
+                    {!isProcessing && !complianceLoading && complianceData?.meta && (
+                      <svg
+                        viewBox={`0 0 ${complianceData.meta.dimensions?.w || 600} ${complianceData.meta.dimensions?.h || 800}`}
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '100%',
+                          pointerEvents: 'none',
+                        }}
+                      >
+                        {/* 1. Center Vertical Line */}
+                        <line
+                          x1={(complianceData.meta.dimensions?.w || 600) / 2}
+                          y1={0}
+                          x2={(complianceData.meta.dimensions?.w || 600) / 2}
+                          y2={complianceData.meta.dimensions?.h || 800}
+                          stroke="rgba(239, 68, 68, 0.45)"
+                          strokeWidth={Math.max(2, Math.round((complianceData.meta.dimensions?.w || 600) / 400))}
+                          strokeDasharray="4 4"
+                        />
+
+                        {/* 2. Ideal Oval Positioning Template */}
+                        <ellipse
+                          cx={(complianceData.meta.dimensions?.w || 600) / 2}
+                          cy={(complianceData.meta.dimensions?.h || 800) * 0.46}
+                          rx={(complianceData.meta.dimensions?.w || 600) * 0.22}
+                          ry={(complianceData.meta.dimensions?.h || 800) * 0.30}
+                          fill="none"
+                          stroke="rgba(255, 255, 255, 0.35)"
+                          strokeWidth={Math.max(2, Math.round((complianceData.meta.dimensions?.w || 600) / 300))}
+                        />
+
+                        {/* 3. Face Bounding Box (if detected) */}
+                        {complianceData.meta.face_rect && (
+                          <rect
+                            x={complianceData.meta.face_rect.x}
+                            y={complianceData.meta.face_rect.y}
+                            width={complianceData.meta.face_rect.w}
+                            height={complianceData.meta.face_rect.h}
+                            fill="none"
+                            stroke="#3b82f6"
+                            strokeWidth={Math.max(2, Math.round((complianceData.meta.dimensions?.w || 600) / 350))}
+                            strokeDasharray="3 3"
+                            rx="4"
+                          />
+                        )}
+
+                        {/* 4. Eye line and circles (if detected) */}
+                        {complianceData.meta.eyes && complianceData.meta.eyes.length === 2 && (
+                          <>
+                            <line
+                              x1={complianceData.meta.eyes[0].x}
+                              y1={complianceData.meta.eyes[0].y}
+                              x2={complianceData.meta.eyes[1].x}
+                              y2={complianceData.meta.eyes[1].y}
+                              stroke="#10b981"
+                              strokeWidth={Math.max(2, Math.round((complianceData.meta.dimensions?.w || 600) / 400))}
+                            />
+                            <circle
+                              cx={complianceData.meta.eyes[0].x}
+                              cy={complianceData.meta.eyes[0].y}
+                              r={Math.max(4, Math.round((complianceData.meta.dimensions?.w || 600) / 120))}
+                              fill="#10b981"
+                            />
+                            <circle
+                              cx={complianceData.meta.eyes[1].x}
+                              cy={complianceData.meta.eyes[1].y}
+                              r={Math.max(4, Math.round((complianceData.meta.dimensions?.w || 600) / 120))}
+                              fill="#10b981"
+                            />
+                          </>
+                        )}
+                      </svg>
+                    )}
+                  </div>
+                </div>
               ) : (
                 <div style={{ color: '#94a3b8', textAlign: 'center', padding: '2rem' }}>
                   {t.noPhotoPreview || 'Upload a photo first to see preview'}
@@ -163,7 +302,13 @@ function EditorPage({ darkMode, toggleTheme }) {
 
             <hr className="divider" />
 
-            <CompliancePanel darkMode={darkMode} />
+            <CompliancePanel 
+              compliance={complianceData} 
+              loading={complianceLoading} 
+              error={complianceError} 
+              onAutoCorrect={handleAutoCorrect} 
+              darkMode={darkMode} 
+            />
 
             <hr className="divider" />
 
