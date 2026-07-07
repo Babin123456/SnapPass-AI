@@ -51,6 +51,7 @@ function PhotoStudio() {
     const t = translations[language];
     const processor = useProcessImage();
     const [imageSrc, setImageSrc] = useState(null);
+    // Base64 and blob reference links for local preview renders
     const [croppedImageSrc, setCroppedImageSrc] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [isRenderingPreview, setIsRenderingPreview] = useState(false);
