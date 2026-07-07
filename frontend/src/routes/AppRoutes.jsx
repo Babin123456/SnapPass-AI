@@ -19,6 +19,7 @@ const PassportComparatorPage = lazy(
   () => import('../pages/PassportComparatorPage')
 );
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
+const ApiDocsPage = lazy(() => import('../pages/ApiDocsPage'));
 
 /**
  * AppRoutes — central route configuration for SnapPass AI.
