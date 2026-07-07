@@ -30,6 +30,7 @@ app.use(auditMiddleware);
 
 app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
 
+// Route groups for all backend resources and authentication APIs
 app.use('/api', apiRoutes);
 app.use(healthRoutes);
 
