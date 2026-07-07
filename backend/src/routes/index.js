@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { sanitizeInput } from '../middleware/sanitize.middleware.js';
+import { requestAuditMiddleware } from '../middleware/auditLogger.middleware.js';
 import { deepRequestSanitizer } from '../middleware/requestSanitizer.middleware.js';
 import authRoutes from './auth.routes.js';
 import uploadRoutes from './upload.routes.js';
@@ -19,6 +20,7 @@ import batchRoutes from './batch.routes.js';
 const router = Router();
 
 router.use(sanitizeInput);
+router.use(requestAuditMiddleware);
 router.use(deepRequestSanitizer);
 router.use('/auth', authRoutes);
 router.use('/upload', uploadRoutes);
