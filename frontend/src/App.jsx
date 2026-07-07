@@ -1,5 +1,4 @@
 import React from 'react';
-import { BrowserRouter } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import AppRoutes from './routes/AppRoutes';
@@ -9,19 +8,20 @@ import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import './App.css';
 import ScrollToTopButton from './components/ScrollToTopButton';
+import SkipToContent from './components/SkipToContent';
 
 function AppContent() {
   const { darkMode, toggleTheme } = useTheme();
 
   return (
     <div className="app-shell">
-      <Navbar darkMode={darkMode} toggleTheme={toggleTheme} />
       <SkipToContent />
       {/* Primary content area rendering child routes */}
+      <Navbar darkMode={darkMode} toggleTheme={toggleTheme} />
       <main className="app-main" id="main-content" tabIndex={-1}>
         <AppRoutes darkMode={darkMode} toggleTheme={toggleTheme} />
       </main>
-      <Footer darkMode={darkMode} toggleTheme={toggleTheme} />
+      <Footer darkMode={darkMode} />
       <SnapPassAssistant />
       <ScrollToTopButton />
     </div>
@@ -30,13 +30,11 @@ function AppContent() {
 
 function App() {
   return (
-    <BrowserRouter>
-      <ToastProvider>
-        <ThemeProvider>
-          <AppContent />
-        </ThemeProvider>
-      </ToastProvider>
-    </BrowserRouter>
+    <ToastProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </ToastProvider>
   );
 }
 
