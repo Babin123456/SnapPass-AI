@@ -32,6 +32,7 @@ function EditorPage({ darkMode, toggleTheme }) {
   const { processImage, processedUrl, isProcessing, error, reset } =
     useImageProcessor();
 
+  // Selected editor preferences and local preview state containers
   const [background, setBackground] = useState('white');
   const [sizePreset, setSizePreset] = useState('35x45');
   const [attire, setAttire] = useState('none');
