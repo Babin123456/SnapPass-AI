@@ -13,6 +13,7 @@ const STORAGE_KEY = 'theme';
 function getInitialTheme() {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (stored === 'dark' || stored === 'light') return stored;
+  // Fallback to system-level light/dark mode preference if storage key is absent
   if (window.matchMedia?.('(prefers-color-scheme: dark)').matches)
     return 'dark';
   return 'light';
