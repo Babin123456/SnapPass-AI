@@ -30,6 +30,7 @@ function UploadBox({ onFileSelect, queue, addToQueue }) {
   const { showToast } = useToast();
   const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState('');
+  const [isValidating, setIsValidating] = useState(false);
 
   const handleFile = async (file) => {
     setError('');
@@ -39,22 +40,24 @@ function UploadBox({ onFileSelect, queue, addToQueue }) {
       return;
     }
 
-    const result = validateImageFile(file);
-    if (!result.valid) {
-      showToast(result.error, 'error');
-      return;
-    }
+    setIsValidating(true);
+    try {
+      const result = validateImageFile(file);
+      if (!result.valid) {
+        showToast(result.error, 'error');
+        return;
+      }
 
-    const isValidMagic = await validateImageMagicBytes(file);
-    if (!isValidMagic) {
-      showToast('Invalid file structure.', 'error');
-      return;
-    }
+      const isValidMagic = await validateImageMagicBytes(file);
+      if (!isValidMagic) {
+        showToast('Invalid file structure.', 'error');
+        return;
+      }
 
-    if (addToQueue) {
-      addToQueue([file]);
-      return;
-    }
+      if (addToQueue) {
+        addToQueue([file]);
+        return;
+      }
 
       // Stage 2 — async: binary magic-byte signature verification
       const isMagicValid = await validateImageMagicBytes(file);

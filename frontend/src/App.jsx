@@ -8,7 +8,7 @@ import { ToastProvider } from './context/ToastContext';
 import { ThemeProvider, useTheme } from './context/ThemeContext';
 import './App.css';
 import ScrollToTopButton from './components/ScrollToTopButton';
-import SkipToContent from './components/SkipToContent';
+
 
 function AppContent() {
   // Retrieve global visual and functional preferences from mounted contexts
