@@ -119,3 +119,8 @@ html.light { color-scheme: light; }
     padding: 0.5rem 0;
   }
 }
+
+.activity-log-viewer {
+  animation: fadeIn 0.4s ease-out;
+}
+
