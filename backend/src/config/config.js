@@ -24,4 +24,5 @@ export const config = {
     JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     EMAIL_FROM: process.env.EMAIL_FROM,
+    WEBHOOK_URL: process.env.WEBHOOK_URL || 'http://localhost:3000/api/webhook-test',
 }
