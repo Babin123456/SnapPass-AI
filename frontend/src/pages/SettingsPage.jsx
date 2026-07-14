@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from '../context/ThemeContext';
 import { validateSettingsInput } from '../utils/settingsValidator.js';
 import { ThemeColorSelector } from '../components/ThemeColorSelector';
+import { ActivityLogViewer } from '../components/ActivityLogViewer';
 
 function SettingsPage() {
   const { darkMode, toggleTheme } = useTheme();
@@ -326,6 +327,7 @@ function SettingsPage() {
                     </div>
                   </div>
                 )}
+                <ActivityLogViewer />
               </div>
             )}
           </main>
