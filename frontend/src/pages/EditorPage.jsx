@@ -14,6 +14,7 @@ import EditorPageDiagnostics from './EditorPageDiagnostics';
 import { ImageAdjustments } from '../components/ImageAdjustments';
 import { cachePhotoOffline } from '../services/indexedDb';
 import api from '../services/api';
+import { autoEnhanceImage } from '../utils/imageEnhancer';
 import { AttireManualAdjuster } from '../components/AttireManualAdjuster';
 import { ImageAdjustments } from '../components/ImageAdjustments';
 import './EditorPage.css';
@@ -116,6 +117,16 @@ function EditorPage({ darkMode, toggleTheme }) {
     },
     [filename]
   );
+
+  const handleAutoEnhance = useCallback(() => {
+    const enhanced = autoEnhanceImage();
+    if (enhanced.success) {
+      setComplianceData(prev => ({
+        ...prev,
+        enhanced: true
+      }));
+    }
+  }, []);
 
   useEffect(() => {
     if (state?.filename) setFilename(state.filename);
@@ -462,6 +473,16 @@ function EditorPage({ darkMode, toggleTheme }) {
                 {error}
               </div>
             )}
+
+            <button
+              type="button"
+              className="btn btn-secondary auto-enhance-btn"
+              onClick={handleAutoEnhance}
+              disabled={!filename}
+              style={{ width: '100%', marginBottom: '0.5rem', background: 'rgba(59,130,246,0.1)', color: '#3b82f6', border: '1px dashed #3b82f6', padding: '12px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}
+            >
+              🪄 Auto-Enhance Contrast & Colors
+            </button>
 
             <button
               className={`editor-page__process-btn ${darkMode ? 'editor-page__process-btn-dark' : ''}`}
