@@ -11,7 +11,12 @@ import CompliancePanel from '../components/CompliancePanel';
 import useImageProcessor from '../hooks/useImageProcessor';
 import { iconMap, backgroundHexMap } from '../data/EditorPageData';
 import EditorPageDiagnostics from './EditorPageDiagnostics';
+import { ImageAdjustments } from '../components/ImageAdjustments';
+import { cachePhotoOffline } from '../services/indexedDb';
 import api from '../services/api';
+import { autoEnhanceImage } from '../utils/imageEnhancer';
+import { AttireManualAdjuster } from '../components/AttireManualAdjuster';
+import { ImageAdjustments } from '../components/ImageAdjustments';
 import './EditorPage.css';
 
 const SIZE_PRESETS = [
@@ -37,10 +42,18 @@ function EditorPage({ darkMode, toggleTheme }) {
   const [sizePreset, setSizePreset] = useState('35x45');
   const [attire, setAttire] = useState('none');
   const [filename, setFilename] = useState(state?.filename || '');
+  const [filters, setFilters] = useState({
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+  });
   const [complianceData, setComplianceData] = useState(null);
   const [complianceLoading, setComplianceLoading] = useState(false);
   const [complianceError, setComplianceError] = useState(null);
   const [cacheBuster, setCacheBuster] = useState(0);
+  const [attireScale, setAttireScale] = useState(1.0);
+  const [attireX, setAttireX] = useState(0);
+  const [attireY, setAttireY] = useState(0);
 
   const apiBaseUrl =
     import.meta.env.VITE_API_URL ??
@@ -105,6 +118,16 @@ function EditorPage({ darkMode, toggleTheme }) {
     [filename]
   );
 
+  const handleAutoEnhance = useCallback(() => {
+    const enhanced = autoEnhanceImage();
+    if (enhanced.success) {
+      setComplianceData(prev => ({
+        ...prev,
+        enhanced: true
+      }));
+    }
+  }, []);
+
   useEffect(() => {
     if (state?.filename) setFilename(state.filename);
   }, [state?.filename]);
@@ -118,6 +141,13 @@ function EditorPage({ darkMode, toggleTheme }) {
         photoSizePreset: sizePreset,
         attire,
       });
+      await cachePhotoOffline({
+        processedUrl: resultUrl,
+        filename,
+        background,
+        sizePreset,
+        attire,
+      }).catch(() => {});
       saveSession({
         step: 'editor',
         processedUrl: resultUrl,
@@ -227,6 +257,7 @@ function EditorPage({ darkMode, toggleTheme }) {
                         objectFit: 'contain',
                         transition: 'opacity 0.3s ease',
                         opacity: isProcessing || complianceLoading ? 0.5 : 1,
+                        filter: `brightness(${filters.brightness}%) contrast(${filters.contrast}%) saturate(${filters.saturation}%)`,
                       }}
                     />
                     {!isProcessing &&
@@ -406,6 +437,20 @@ function EditorPage({ darkMode, toggleTheme }) {
             <hr className="divider" />
 
             <AttireSelector selected={attire} onChange={setAttire} />
+            {attire !== 'none' && (
+              <AttireManualAdjuster
+                scale={attireScale}
+                xOffset={attireX}
+                yOffset={attireY}
+                onChangeScale={setAttireScale}
+                onChangeX={setAttireX}
+                onChangeY={setAttireY}
+              />
+            )}
+
+            <hr className="divider" />
+
+            <ImageAdjustments filters={filters} onChange={setFilters} />
 
             <hr className="divider" />
 
@@ -428,6 +473,16 @@ function EditorPage({ darkMode, toggleTheme }) {
                 {error}
               </div>
             )}
+
+            <button
+              type="button"
+              className="btn btn-secondary auto-enhance-btn"
+              onClick={handleAutoEnhance}
+              disabled={!filename}
+              style={{ width: '100%', marginBottom: '0.5rem', background: 'rgba(59,130,246,0.1)', color: '#3b82f6', border: '1px dashed #3b82f6', padding: '12px', borderRadius: '8px', fontWeight: '600', cursor: 'pointer' }}
+            >
+              🪄 Auto-Enhance Contrast & Colors
+            </button>
 
             <button
               className={`editor-page__process-btn ${darkMode ? 'editor-page__process-btn-dark' : ''}`}
